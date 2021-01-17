@@ -11,10 +11,10 @@ void map_simple_usage()
 	memo[5] = "variel";
 	memo[6] = "mariana";
 	
-	if (memo.find(3) != memo.end())
+	if(memo.find(3) != memo.end())
 		std::cout << memo[3] << std::endl;
 	else
-		std:: cout << "not" << std::endl;    
+		std::cout << "not" << std::endl;    
 }
 
 void func_default_parameter()
@@ -29,5 +29,6 @@ void function_parameter()
 
 int main()
 {
-    void function_parameter
+    int a = 0;
+    std::cout << ++a;
 }

@@ -935,7 +935,42 @@ void run_can_construct_tab()
 //
 // COUNT CONSTRUCT TABULATION
 //
+int count_construct_tab(std::string target, std::vector<std::string> word_bank)
+{
+    // time O(m^2*n)
+    // space O(m)
+    std::vector<int> table(target.size() + 1, 0);
+    table[0] = 1;
+    
+    for(int i = 0; i < table.size(); ++i){
+        for(std::string word : word_bank){
+            if(target.substr(i, word.size()) == word){
+                // std::cout << target.substr(i, i + word.size()) << " = " << word << '\n';
+                table[i + word.size()] += table[i];
+            }
+        }
+    }
 
+    return table[target.size()];
+}
+
+void run_count_construct_tab()
+{
+    std::vector<std::string> strs1 = { "purp", "p", "ur", "le", "purpl" };
+    std::cout << count_construct_tab("purple", strs1) << '\n';     // 2
+    
+    std::vector<std::string> strs2 = { "ab", "abc", "cd", "def", "abcd" };
+    std::cout << count_construct_tab("abcdef", strs2) << '\n';     // 1
+    
+    std::vector<std::string> strs3 = { "bo", "rd", "ate", "t", "ska", "sk", "boar" }; 
+    std::cout << count_construct_tab("skateboard", strs3) << '\n';     // 0
+    
+    std::vector<std::string> strs4 = { "a", "p", "ent", "enter", "ot", "o", "t" };
+    std::cout << count_construct_tab("enterapotentpot", strs4) << '\n';     // 4
+    
+    std::vector<std::string> strs5 = { "e", "ee", "eee", "eeee", "eeeee", "eeeeee" };
+    std::cout << count_construct_tab("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeef", strs5) << '\n';     // 0
+}
 //
 // ALL CONSTRUCT TABULATION
 //
@@ -959,5 +994,5 @@ void run_2dv_test(){
 }
 
 int main(){
-    run_can_construct_tab();
+    run_count_construct_tab();
 }
