@@ -19,7 +19,7 @@ void map_simple_usage()
 
 void func_default_parameter()
 {
-    
+
 }
 
 void function_parameter()

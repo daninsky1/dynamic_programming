@@ -896,7 +896,42 @@ void run_best_sum_tab()
 //
 // CAN CONSTRUCT TABULATION
 //
+bool can_construct_tab(std::string target, std::vector<std::string> word_bank)
+{
+    // time O(m*n*m)
+    // space O(m)
+    std::vector<bool> table(target.size()+1, false);
+    table[0] = true;
+    // std::cout << table.size() << '\n';
+    
+    for(int i = 0; i < table.size(); ++i){
+        if(table[i]){
+            for(std::string word : word_bank){
+                if(target.substr(i, word.size()) == word){
+                    // std::cout << target.substr(i, i + word.size()) << " = " << word << '\n';
+                    table[i + word.size()] = true;
+                }
+            }
+        }
+    }
+    
+    return table[target.size()];
+}
 
+void run_can_construct_tab()
+{
+    std::vector<std::string> strs1 = { "ab", "abc", "cd", "def", "abcd" };
+    std::cout << std::boolalpha << can_construct_tab("abcdef", strs1) << '\n';     // true
+    
+    std::vector<std::string> strs2 = { "bo", "rd", "ate", "t", "ska", "sk", "boar" }; 
+    std::cout << can_construct_tab("skateboard", strs2) << '\n';     // false
+    
+    std::vector<std::string> strs3 = { "a", "p", "ent", "enter", "ot", "o", "t" };
+    std::cout << can_construct_tab("enterapotentpot", strs3) << '\n';     // true
+    
+    std::vector<std::string> strs4 = { "e", "ee", "eee", "eeee", "eeeee", "eeeeee" };
+    std::cout << can_construct_tab("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeef", strs4) << '\n';     // false
+}
 //
 // COUNT CONSTRUCT TABULATION
 //
@@ -924,5 +959,5 @@ void run_2dv_test(){
 }
 
 int main(){
-    run_best_sum_tab();
+    run_can_construct_tab();
 }
