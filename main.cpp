@@ -854,14 +854,20 @@ std::vector<int> best_sum_tab(int target_sum, std::vector<int> numbers)
     table[0] = {};
     
     for(int i = 0; i < table.size(); ++i){
-        if(table[i] != null_vector]){
+        if(table[i] != null_vector){
             for(int num : numbers){
-                
+                if(i + num < table.size()){
+                    std::vector<int> combination = table[i];
+                    combination.push_back(num);
+                    // print_v(combination);
+                    if(table[i + num] == null_vector || combination.size() < table[i + num].size())
+                        table[i + num] = combination;
+                }
             }
         }
     }
     
-    return table[];
+    return table[target_sum];
 }
 
 void run_best_sum_tab()
