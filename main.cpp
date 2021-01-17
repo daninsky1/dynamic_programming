@@ -974,7 +974,54 @@ void run_count_construct_tab()
 //
 // ALL CONSTRUCT TABULATION
 //
+std::vector<std::vector<std::string>> all_construct_tab(std::string target, std::vector<std::string> word_bank)
+{
+    // time ~O(n^m)
+    // space ~O(n^m)
+    std::vector<std::vector<std::vector<std::string>>> table(target.size() + 1);
+    table[0] = {{}};
+    std::cout << table.size();
+    
+    for(int i = 0; i < table.size(); ++i){
+        for(std::string word : word_bank){
+            if(target.substr(i, word.size()) == word){
+                std::vector<std::vector<std::string>> new_combination = table[i];
+                for(int j = 0; j < new_combination.size(); ++j)
+                    new_combination[j].push_back(word);
+                table[i + word.size()].insert(table[i + word.size()].end(), new_combination.begin(), new_combination.end());
+            }
+        }
+    }
+   
+    return table[target.size()];
+}
 
+void run_all_construct_tab()
+{
+    std::vector<std::string> strs1 = { "purp", "p", "ur", "le", "purpl" };
+    print_2dv(all_construct_tab("purple", strs1));
+    // {
+    //     {"purp", "le"},
+    //     {"p", "ur", "p", "le"}
+    // }
+    
+    std::vector<std::string> strs2 = { "ab", "abc", "cd", "def", "abcd" , "ef", "c"};
+    print_2dv(all_construct_tab("abcdef", strs2));
+    // {
+        // {"ab", "cd", "ef"},
+        // {"ab", "c", "def"},
+        // {"abc", "def"},
+        // {"abcd", "ef"}
+    // }
+    
+    std::vector<std::string> strs3 = { "bo", "rd", "ate", "t", "ska", "sk", "boar" }; 
+    print_2dv(all_construct_tab("skateboard", strs3));
+    // { }
+    
+    std::vector<std::string> strs4 = { "a", "aa", "aaa", "aaaa", "aaaaa" };
+    print_2dv(all_construct_tab("aaaaaaaaaaaaaaaaaaaaaaaaaaaz", strs4));
+    // { }
+}
 // 2d vector
 void run_2dv_test(){
     std::vector<std::vector<std::string>> list1 = {
@@ -994,5 +1041,5 @@ void run_2dv_test(){
 }
 
 int main(){
-    run_count_construct_tab();
+    run_all_construct_tab();
 }
