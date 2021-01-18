@@ -4,40 +4,63 @@
 #include <vector>
 #include <string>
 
-void print_v(std::vector<int> vec)
+//
+// PRINT VECTOR
+//
+template<typename T>
+void printv(const std::vector<T> vector, bool endline = true)
 {
-    std::cout << "{ ";
-    for(int x : vec){
-        std::cout << x << ' ';
+    // 1D vector
+    const int v_size1 = vector.size();    // size of the vector
+    
+    std::cout << '{';
+    for(int i = 0; i < v_size1; ++i){
+        std::cout << vector[i];
+        if(i < v_size1 - 1)   // put comma until the last element
+            std::cout << ", ";
     }
-    std::cout << '}' << std::endl;
+    std::cout << '}';
+    if(endline) std::cout << std::endl;
 }
 
-void print_2dv(std::vector<std::vector<std::string>> vec)
+template<typename T>
+void printv(const std::vector<std::vector<T>> vector, bool endline = true, bool extra_indent = false)
 {
-    std::cout << "{ ";
-    for(std::vector<std::string> list : vec){
-        std::cout << "{ ";
-        for(std::string word : list){
-            std::cout << word << ' ';
-        }
-        std::cout << "} ";
+    // 2D vector
+    const int v_size1 = vector.size();        // size of the vector
+    
+    if(extra_indent) std::cout << "    ";
+    std::cout << "{\n";
+    for(int i = 0; i < v_size1; ++i){
+        if(extra_indent) std::cout << "    ";
+        std::cout << "    ";
+        printv(vector[i], false);
+        if(i < v_size1 - 1)   // put comma and \n until the last element
+            std::cout << ", \n";
     }
-    std::cout << '}' << std::endl;
+    std::cout << '\n';
+    if(extra_indent) std::cout << "    ";
+    std::cout << '}';
+    if(endline) std::cout << std::endl;
 }
 
-void print_2dv(std::vector<std::vector<int>> vec)
+template<typename T>
+void printv(const std::vector<std::vector<std::vector<T>>> vector)
 {
-    std::cout << "{ ";
-    for(std::vector<int> list : vec){
-        std::cout << "{ ";
-        for(int n : list){
-            std::cout << n << ' ';
-        }
-        std::cout << "} ";
+    // 3D vector
+    const int v_size1 = vector.size();        // size of the vector
+    
+    std::cout << "{\n";
+    for(int i = 0; i < v_size1; ++i){
+        printv(vector[i], false, true);
+        if(i < v_size1 - 1)   // put comma until the last element
+            std::cout << ", \n";
     }
-    std::cout << '}' << std::endl;
+    std::cout << "\n}" << std::endl;
 }
+//
+// DYNAMIC PROGRAMMING
+//
 
 // example of o(n) time and O(n) space
 
@@ -610,7 +633,7 @@ std::vector<std::vector<std::string>> all_construct(std::string target, std::vec
             suffix.erase(0, word.size());
             // std::cout << suffix << '\n';
             std::vector<std::vector<std::string>> suffix_ways = all_construct(suffix, word_bank);
-            // print_2dv(suffix_ways);
+            // printv(suffix_ways);
             std::vector<std::vector<std::string>> target_ways = suffix_ways;
             for(int i = 0; i < target_ways.size(); ++i){
                 target_ways[i].insert(target_ways[i].begin(), word);
@@ -624,14 +647,14 @@ std::vector<std::vector<std::string>> all_construct(std::string target, std::vec
 void run_all_construct()
 {
     std::vector<std::string> strs1 = { "purp", "p", "ur", "le", "purpl" };
-    print_2dv(all_construct("purple", strs1));
+    printv(all_construct("purple", strs1));
     // {
     //     {"purp", "le"},
     //     {"p", "ur", "p", "le"}
     // }
     
     std::vector<std::string> strs2 = { "ab", "abc", "cd", "def", "abcd" , "ef", "c"};
-    print_2dv(all_construct("abcdef", strs2));
+    printv(all_construct("abcdef", strs2));
     // {
     //     {"ab", "cd", "ef"},
     //     {"ab", "c", "def"},
@@ -640,11 +663,11 @@ void run_all_construct()
     // }
     
     std::vector<std::string> strs3 = { "bo", "rd", "ate", "t", "ska", "sk", "boar" }; 
-    print_2dv(all_construct("skateboard", strs3));
+    printv(all_construct("skateboard", strs3));
     // { }
     
     std::vector<std::string> strs4 = { "a", "aa", "aaa", "aaaa", "aaaaa" };
-    print_2dv(all_construct("aaaaaaaaaaaaaaaaaaaaaaaaaaaz", strs4));
+    printv(all_construct("aaaaaaaaaaaaaaaaaaaaaaaaaaaz", strs4));
     // { }
 }
 
@@ -666,7 +689,7 @@ std::vector<std::vector<std::string>> dy_all_construct(std::string target, std::
             suffix.erase(0, word.size());
             // std::cout << suffix << '\n';
             std::vector<std::vector<std::string>> suffix_ways = dy_all_construct(suffix, word_bank, memo);
-            // print_2dv(suffix_ways);
+            // printv(suffix_ways);
             std::vector<std::vector<std::string>> target_ways = suffix_ways;
             for(int i = 0; i < target_ways.size(); ++i){
                 target_ways[i].insert(target_ways[i].begin(), word);
@@ -688,14 +711,14 @@ std::vector<std::vector<std::string>> dy_all_construct(std::string target, std::
 void run_dy_all_construct()
 {
     std::vector<std::string> strs1 = { "purp", "p", "ur", "le", "purpl" };
-    print_2dv(dy_all_construct("purple", strs1));
+    printv(dy_all_construct("purple", strs1));
     // {
     //     {"purp", "le"},
     //     {"p", "ur", "p", "le"}
     // }
     
     std::vector<std::string> strs2 = { "ab", "abc", "cd", "def", "abcd" , "ef", "c"};
-    print_2dv(dy_all_construct("abcdef", strs2));
+    printv(dy_all_construct("abcdef", strs2));
     // {
     //     {"ab", "cd", "ef"},
     //     {"ab", "c", "def"},
@@ -704,11 +727,11 @@ void run_dy_all_construct()
     // }
     
     std::vector<std::string> strs3 = { "bo", "rd", "ate", "t", "ska", "sk", "boar" }; 
-    print_2dv(dy_all_construct("skateboard", strs3));
+    printv(dy_all_construct("skateboard", strs3));
     // { }
     
     std::vector<std::string> strs4 = { "a", "aa", "aaa", "aaaa", "aaaaa" };
-    print_2dv(dy_all_construct("aaaaaaaaaaaaaaaaaaaaaaaaaaa", strs4));
+    printv(dy_all_construct("aaaaaaaaaaaaaaaaaaaaaaaaaaa", strs4));
     // { }
 }
 //
@@ -751,7 +774,7 @@ unsigned int grid_traveler_tab(int m, int n){
             if(i+1 <= m) table[i + 1][j] += current;
         }
     }
-    // print_2dv(table);
+    // printv(table);
     return table[m][n];
 }
 
@@ -801,7 +824,7 @@ std::vector<int> how_sum_tab(int target_sum, std::vector<int> numbers){
     table[0] = {};
     
     for(int i = 0; i < table.size(); ++i){
-        // print_2dv(table);
+        // printv(table);
         if(table[i] != null_vector){
             for(int num : numbers){
                 if(i + num < table.size()){
@@ -859,7 +882,7 @@ std::vector<int> best_sum_tab(int target_sum, std::vector<int> numbers)
                 if(i + num < table.size()){
                     std::vector<int> combination = table[i];
                     combination.push_back(num);
-                    // print_v(combination);
+                    // printv(combination);
                     if(table[i + num] == null_vector || combination.size() < table[i + num].size())
                         table[i + num] = combination;
                 }
@@ -999,14 +1022,14 @@ std::vector<std::vector<std::string>> all_construct_tab(std::string target, std:
 void run_all_construct_tab()
 {
     std::vector<std::string> strs1 = { "purp", "p", "ur", "le", "purpl" };
-    print_2dv(all_construct_tab("purple", strs1));
+    printv(all_construct_tab("purple", strs1));
     // {
     //     {"purp", "le"},
     //     {"p", "ur", "p", "le"}
     // }
     
     std::vector<std::string> strs2 = { "ab", "abc", "cd", "def", "abcd" , "ef", "c"};
-    print_2dv(all_construct_tab("abcdef", strs2));
+    printv(all_construct_tab("abcdef", strs2));
     // {
         // {"ab", "cd", "ef"},
         // {"ab", "c", "def"},
@@ -1015,31 +1038,186 @@ void run_all_construct_tab()
     // }
     
     std::vector<std::string> strs3 = { "bo", "rd", "ate", "t", "ska", "sk", "boar" }; 
-    print_2dv(all_construct_tab("skateboard", strs3));
+    printv(all_construct_tab("skateboard", strs3));
     // { }
     
     std::vector<std::string> strs4 = { "a", "aa", "aaa", "aaaa", "aaaaa" };
-    print_2dv(all_construct_tab("aaaaaaaaaaaaaaaaaaaaaaaaaaaz", strs4));
+    printv(all_construct_tab("aaaaaaaaaaaaaaaaaaaaaaaaaaaz", strs4));
     // { }
 }
 // 2d vector
-void run_2dv_test(){
-    std::vector<std::vector<std::string>> list1 = {
+void printv_test1(){
+    // 1d vectors
+    std::vector<char> char_list1 = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'};
+    std::vector<char> char_list2 = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'};
+    std::vector<int> int_list1 = {1, 20, 300, 1'000, 10'000, 100'000, 1'000'000};
+    std::vector<int> int_list2 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    std::vector<double> double_list1 = {1.1, 20.22, 300.333, 400.4444};
+    std::vector<double> double_list2 = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
+    std::vector<std::string> str_list1 = {
+        "purp", "le", "p", "ur", "p", "le"
+    };
+    std::vector<std::string> str_list2 = {
+        "ab", "cd", "ef", "ab", "c", "def", "abc", "def", "abcd", "ef"
+    };
+    printv(char_list1);
+    printv(char_list2);
+    printv(int_list1);
+    printv(int_list2);
+    printv(double_list1);
+    printv(double_list2);
+    printv(str_list1);
+    printv(str_list2);
+}
+
+void printv_test2()
+{
+    // 2d vectors
+    std::vector<std::vector<char>> char_list1 = {
+        {'a', 'b', 'c', 'd', 'e'},
+        {'f', 'g', 'h', 'i', 'j'}
+    };
+    std::vector<std::vector<char>> char_list2 = {
+        {'A', 'B', 'C', 'D', 'E'},
+        {'F', 'G', 'H', 'I', 'J'}
+    };
+    std::vector<std::vector<int>> int_list1 = {
+        {1, 20, 300, 1'000},
+        {10'000, 100'000, 1'000'000}
+    };
+    std::vector<std::vector<int>> int_list2 = {
+        {1, 2, 3, 4, 5},
+        {6, 7, 8, 9, 10 }
+    };
+    std::vector<std::vector<double>> double_list1 = {
+        {1.1, 20.22},
+        {300.333, 400.4444}
+    };
+    std::vector<std::vector<double>> double_list2 = {
+        {1.0, 2.0, 3.0},
+        {4.0, 5.0, 6.0}
+    };
+    std::vector<std::vector<std::string>> str_list1 = {
         {"purp", "le"},
         {"p", "ur", "p", "le"}
     };
-    std::vector<std::vector<std::string>> list2 = {
+    std::vector<std::vector<std::string>> str_list2 = {
         {"ab", "cd", "ef"},
         {"ab", "c", "def"},
         {"abc", "def"},
-        {"abcd", "ef"},
+        {"abcd", "ef"}
     };
-    std::vector<std::vector<std::string>> empty_list;
-    print_2dv(list1);
-    print_2dv(list2);
-    print_2dv(empty_list);
+    printv(char_list1);
+    printv(char_list2);
+    printv(int_list1);
+    printv(int_list2);
+    printv(double_list1);
+    printv(double_list2);
+    printv(str_list1);
+    printv(str_list2);  
+}
+
+void printv_test3()
+{
+    // 2d vectors
+    std::vector<std::vector<std::vector<char>>> char_list1 = {
+        {
+            {'a', 'b', 'c', 'd', 'e'},
+            {'f', 'g', 'h', 'i', 'j'}            
+        },
+        {
+            {'A', 'B', 'C', 'D', 'E'},
+            {'F', 'G', 'H', 'I', 'J'}
+        }
+    };
+    std::vector<std::vector<std::vector<char>>> char_list2 = {
+        {
+            {'A', 'B', 'C', 'D', 'E'},
+            {'F', 'G', 'H', 'I', 'J'}
+        },
+        {
+            {'a', 'b', 'c', 'd', 'e'},
+            {'f', 'g', 'h', 'i', 'j'}            
+        }
+    };
+    std::vector<std::vector<std::vector<int>>> int_list1 = {
+        {
+            {1, 2, 3, 4, 5},
+            {6, 7, 8, 9, 10 }
+        },
+        {
+            {1, 20, 300, 1'000},
+            {10'000, 100'000, 1'000'000}
+        }        
+    };
+    std::vector<std::vector<std::vector<int>>> int_list2 = {
+        {
+            {1, 20, 300, 1'000},
+            {10'000, 100'000, 1'000'000}
+        },  
+        {
+            {1, 2, 3, 4, 5},
+            {6, 7, 8, 9, 10 }
+        }
+    };
+    std::vector<std::vector<std::vector<double>>> double_list1 = {
+        {
+            {1.1, 20.22},
+            {300.333, 400.4444}
+        },
+        {
+            {1.0, 2.0, 3.0},
+            {4.0, 5.0, 6.0}
+        }
+    };
+    std::vector<std::vector<std::vector<double>>> double_list2 = {
+        {
+            {1.0, 2.0, 3.0},
+            {4.0, 5.0, 6.0}
+        },
+        {
+            {1.0, 2.0, 3.0},
+            {4.0, 5.0, 6.0}
+        }
+    };
+    std::vector<std::vector<std::vector<std::string>>> str_list1 = {
+        {
+            {"purp", "le"},
+            {"p", "ur", "p", "le"}
+        },
+        {
+            {"ab", "cd", "ef"},
+            {"ab", "c", "def"},
+            {"abc", "def"},
+            {"abcd", "ef"}
+        }
+    };
+    std::vector<std::vector<std::vector<std::string>>> str_list2 = {
+        {
+            {"ab", "cd", "ef"},
+            {"ab", "c", "def"},
+            {"abc", "def"},
+            {"abcd", "ef"}
+        },
+        {
+            {"purp", "le"},
+            {"p", "ur", "p", "le"}
+        }
+    };
+    printv(char_list1);
+    printv(char_list2);
+    printv(int_list1);
+    printv(int_list2);
+    printv(double_list1);
+    printv(double_list2);
+    printv(str_list1);
+    printv(str_list2);  
 }
 
 int main(){
-    run_all_construct_tab();
+    printv_test1();
+    printv_test2();
+    printv_test3();
+    std::cout << "    " << "indent" << '\n';
+    std::cout << "        " << "indent" << '\n';
 }
