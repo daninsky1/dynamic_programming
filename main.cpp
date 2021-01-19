@@ -4,19 +4,20 @@
 #include <vector>
 #include <string>
 
+
 //
 // PRINT VECTOR
 //
 template<typename T>
-void printv(const std::vector<T> vector, bool endline = true)
+void printv(const std::vector<T> &vector, bool endline = true)
 {
     // 1D vector
-    const int v_size1 = vector.size();    // size of the vector
+    const int v_size = vector.size();    // size of the vector
     
     std::cout << '{';
-    for(int i = 0; i < v_size1; ++i){
+    for(int i = 0; i < v_size; ++i){
         std::cout << vector[i];
-        if(i < v_size1 - 1)   // put comma until the last element
+        if(i < v_size - 1)   // put comma until the last element
             std::cout << ", ";
     }
     std::cout << '}';
@@ -24,18 +25,18 @@ void printv(const std::vector<T> vector, bool endline = true)
 }
 
 template<typename T>
-void printv(const std::vector<std::vector<T>> vector, bool endline = true, bool extra_indent = false)
+void printv(const std::vector<std::vector<T>> &vector, bool endline = true, bool extra_indent = false)
 {
     // 2D vector
-    const int v_size1 = vector.size();        // size of the vector
+    const int v_size = vector.size();        // size of the vector
     
     if(extra_indent) std::cout << "    ";
     std::cout << "{\n";
-    for(int i = 0; i < v_size1; ++i){
+    for(int i = 0; i < v_size; ++i){
         if(extra_indent) std::cout << "    ";
         std::cout << "    ";
         printv(vector[i], false);
-        if(i < v_size1 - 1)   // put comma and \n until the last element
+        if(i < v_size - 1)   // put comma and \n until the last element
             std::cout << ", \n";
     }
     std::cout << '\n';
@@ -45,15 +46,15 @@ void printv(const std::vector<std::vector<T>> vector, bool endline = true, bool 
 }
 
 template<typename T>
-void print(const std::vector<std::vector<std::vector<T>>> vector)
+void print(const std::vector<std::vector<std::vector<T>>> &vector)
 {
     // 3D vector
-    const int v_size1 = vector.size();        // size of the vector
+    const int v_size = vector.size();        // size of the vector
     
     std::cout << "{\n";
-    for(int i = 0; i < v_size1; ++i){
+    for(int i = 0; i < v_size; ++i){
         printv(vector[i], false, true);
-        if(i < v_size1 - 1)   // put comma until the last element
+        if(i < v_size - 1)   // put comma until the last element
             std::cout << ", \n";
     }
     std::cout << "\n}" << std::endl;
@@ -102,15 +103,15 @@ int lib(int n)
 //
 // FIBONACCI RECURSION
 //
-long long int fib(int n)
+unsigned long long int fib_recu(int n)
 {
     if (n <= 2) return 1;
-    return fib(n - 1) + fib(n - 2);
+    return fib_recu(n - 1) + fib_recu(n - 2);
 }
 //
 // FIBONACCI MEMOIZATION
 //
-long long int fib_memo(int n, std::map<int, long long int>& memo)
+unsigned long long int fib_memo(int n, std::map<int, long long int>& memo)
 {
     if (memo.count(n)) return memo[n];
     if (n <= 2) return 1;
@@ -120,7 +121,7 @@ long long int fib_memo(int n, std::map<int, long long int>& memo)
     // O(2n) space
 }
 
-long long int fib_memo(int n)
+unsigned long long int fib_memo(int n)
 {
     std::map<int, long long int> default_map;
     return fib_memo(n, default_map);
@@ -128,7 +129,7 @@ long long int fib_memo(int n)
 //
 // FIBONACCI TABULATION
 //
-long long int fib_tab(int n)
+unsigned long long int fib_tab(int n)
 {
     // time O(n)
     // space O(n)
@@ -143,13 +144,20 @@ long long int fib_tab(int n)
     return table[n];
 }
 
-void run_fib(long long int(*fib_fun)(int))
+unsigned long long int fib(int n, unsigned long long int(*fib_fun)(int) = fib_tab)
+{
+    // max number 12,200,160,415,121,876,738
+    if(n > 93) std::clog << "Number > 93, FIB OVERFLOW!" << std::endl;
+    return fib_fun(n);
+}
+
+void run_fib(unsigned long long int(*fib_fun)(int) = fib_tab)
 {
     std::map<int, long long int> memo;
-    std::cout << fib_fun(6) << '\n';    // 8
-    std::cout << fib_fun(7) << '\n';    // 13
-    std::cout << fib_fun(8) << '\n';    // 21
-    std::cout << fib_fun(50) << '\n';   // 12'586'269'025
+    std::cout << fib(6, fib_fun) << '\n';    // 8
+    std::cout << fib(7, fib_fun) << '\n';    // 13
+    std::cout << fib(8, fib_fun) << '\n';    // 21
+    std::cout << fib(50, fib_fun) << '\n';   // 12'586'269'025
 }
 //
 // GRID TRAVELER RECURSION
@@ -969,5 +977,10 @@ void printv_test3()
 
 int main()
 {
-    
+    // printv_test1();
+    // printv_test2();
+    printv_test3();
+    std::cout << "    indent\n";
+    std::cout << "        indent";
+    std::cin.ignore();
 }
