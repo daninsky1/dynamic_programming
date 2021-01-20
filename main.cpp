@@ -4,20 +4,19 @@
 #include <vector>
 #include <string>
 
-
 //
 // PRINT VECTOR
 //
 template<typename T>
-void printv(const std::vector<T> &vector, bool endline = true)
+void printv(const std::vector<T> vector, bool endline = true)
 {
     // 1D vector
-    const int v_size = vector.size();    // size of the vector
+    const int v_size1 = vector.size();    // size of the vector
     
     std::cout << '{';
-    for(int i = 0; i < v_size; ++i){
+    for(int i = 0; i < v_size1; ++i){
         std::cout << vector[i];
-        if(i < v_size - 1)   // put comma until the last element
+        if(i < v_size1 - 1)   // put comma until the last element
             std::cout << ", ";
     }
     std::cout << '}';
@@ -25,18 +24,18 @@ void printv(const std::vector<T> &vector, bool endline = true)
 }
 
 template<typename T>
-void printv(const std::vector<std::vector<T>> &vector, bool endline = true, bool extra_indent = false)
+void printv(const std::vector<std::vector<T>> vector, bool endline = true, bool extra_indent = false)
 {
     // 2D vector
-    const int v_size = vector.size();        // size of the vector
+    const int v_size1 = vector.size();        // size of the vector
     
     if(extra_indent) std::cout << "    ";
     std::cout << "{\n";
-    for(int i = 0; i < v_size; ++i){
+    for(int i = 0; i < v_size1; ++i){
         if(extra_indent) std::cout << "    ";
         std::cout << "    ";
         printv(vector[i], false);
-        if(i < v_size - 1)   // put comma and \n until the last element
+        if(i < v_size1 - 1)   // put comma and \n until the last element
             std::cout << ", \n";
     }
     std::cout << '\n';
@@ -46,15 +45,15 @@ void printv(const std::vector<std::vector<T>> &vector, bool endline = true, bool
 }
 
 template<typename T>
-void print(const std::vector<std::vector<std::vector<T>>> &vector)
+void printv(const std::vector<std::vector<std::vector<T>>> vector)
 {
     // 3D vector
-    const int v_size = vector.size();        // size of the vector
+    const int v_size1 = vector.size();        // size of the vector
     
     std::cout << "{\n";
-    for(int i = 0; i < v_size; ++i){
+    for(int i = 0; i < v_size1; ++i){
         printv(vector[i], false, true);
-        if(i < v_size - 1)   // put comma until the last element
+        if(i < v_size1 - 1)   // put comma until the last element
             std::cout << ", \n";
     }
     std::cout << "\n}" << std::endl;
