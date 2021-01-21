@@ -8,15 +8,15 @@
 // PRINT VECTOR
 //
 template<typename T>
-void printv(const std::vector<T> vector, bool endline = true)
+void printv(const std::vector<T> &vector, const bool endline = true)
 {
     // 1D vector
-    const int v_size1 = vector.size();    // size of the vector
+    const int v_size = vector.size();    // size of the vector
     
     std::cout << '{';
-    for(int i = 0; i < v_size1; ++i){
+    for(int i = 0; i < v_size; ++i){
         std::cout << vector[i];
-        if(i < v_size1 - 1)   // put comma until the last element
+        if(i < v_size - 1)   // put comma until the last element
             std::cout << ", ";
     }
     std::cout << '}';
@@ -24,18 +24,18 @@ void printv(const std::vector<T> vector, bool endline = true)
 }
 
 template<typename T>
-void printv(const std::vector<std::vector<T>> vector, bool endline = true, bool extra_indent = false)
+void printv(const std::vector<std::vector<T>> &vector, const bool endline = true, const bool extra_indent = false)
 {
     // 2D vector
-    const int v_size1 = vector.size();        // size of the vector
+    const int v_size = vector.size();        // size of the vector
     
     if(extra_indent) std::cout << "    ";
     std::cout << "{\n";
-    for(int i = 0; i < v_size1; ++i){
+    for(int i = 0; i < v_size; ++i){
         if(extra_indent) std::cout << "    ";
         std::cout << "    ";
         printv(vector[i], false);
-        if(i < v_size1 - 1)   // put comma and \n until the last element
+        if(i < v_size - 1)   // put comma and \n until the last element
             std::cout << ", \n";
     }
     std::cout << '\n';
@@ -45,15 +45,15 @@ void printv(const std::vector<std::vector<T>> vector, bool endline = true, bool 
 }
 
 template<typename T>
-void printv(const std::vector<std::vector<std::vector<T>>> vector)
+void printv(const std::vector<std::vector<std::vector<T>>> &vector)
 {
     // 3D vector
-    const int v_size1 = vector.size();        // size of the vector
+    const int v_size = vector.size();        // size of the vector
     
     std::cout << "{\n";
-    for(int i = 0; i < v_size1; ++i){
+    for(int i = 0; i < v_size; ++i){
         printv(vector[i], false, true);
-        if(i < v_size1 - 1)   // put comma until the last element
+        if(i < v_size - 1)   // put comma until the last element
             std::cout << ", \n";
     }
     std::cout << "\n}" << std::endl;
@@ -102,55 +102,64 @@ int lib(int n)
 //
 // FIBONACCI RECURSION
 //
-unsigned long long int fib_recu(int n)
+unsigned long long int fib_recu(const int &n)
 {
-    if (n <= 2) return 1;
+    // O(2^n) time
+    // O(n) space
+    if(n <= 2) return 1;
     return fib_recu(n - 1) + fib_recu(n - 2);
 }
 //
 // FIBONACCI MEMOIZATION
 //
-unsigned long long int fib_memo(int n, std::map<int, long long int>& memo)
+unsigned long long int fib_memo(const int &n, std::map<int, long long int>& memo)
 {
-    if (memo.count(n)) return memo[n];
-    if (n <= 2) return 1;
+    // O(n) time
+    // O(n) space
+    if(memo.count(n)) return memo[n];
+    if(n <= 2) return 1;
     memo[n] = fib_memo(n - 1, memo) + fib_memo(n - 2, memo);
     return memo[n];
-    // O(2n) time
-    // O(2n) space
 }
 
-unsigned long long int fib_memo(int n)
+unsigned long long int fib_memo(const int &n)
 {
-    std::map<int, long long int> default_map;
-    return fib_memo(n, default_map);
+    std::map<int, long long int> memo;
+    return fib_memo(n, memo);
 }
 //
 // FIBONACCI TABULATION
 //
-unsigned long long int fib_tab(int n)
+unsigned long long int fib_tab(const int &n)
 {
     // time O(n)
     // space O(n)
-    std::vector<long long int> table(n+1, 0);
+    std::vector<long long int> table(n + 1, 0);
     table[1] = 1;
-    for(int i = 0; i < table.size()-2; ++i){
+    for(int i = 0; i < table.size() - 2; ++i){
         table[i + 1] += table[i];
         table[i + 2] += table[i];
     }
-    table[table.size()-1] += table[table.size()-2];
-    // table[-1] += table[-2];
+    table[table.size() - 1] += table[table.size() - 2];
     return table[n];
 }
-
-unsigned long long int fib(int n, unsigned long long int(*fib_fun)(int) = fib_tab)
+//
+// FIBONACCI CALLER
+//
+unsigned long long int fib(const int &n, unsigned long long int(*fib_fun)(const int&) = fib_tab)
 {
     // max number 12,200,160,415,121,876,738
     if(n > 93) std::clog << "Number > 93, FIB OVERFLOW!" << std::endl;
-    return fib_fun(n);
+    else if(n < 0){
+        std::clog << "Negative number! Invalid." << std::endl;
+        return 0;
+    }
+    else if(n == 0) return 0;
+    else if(n == 1 || n == 2) return 1;
+    return fib_fun(n);  // callback fib algorithm
 }
 
-void run_fib(unsigned long long int(*fib_fun)(int) = fib_tab)
+void test_fib(unsigned long long int(*fib_fun)(const int&) = fib_tab)
 {
     std::map<int, long long int> memo;
     std::cout << fib(6, fib_fun) << '\n';    // 8
@@ -161,82 +170,85 @@ void run_fib(unsigned long long int(*fib_fun)(int) = fib_tab)
 //
 // GRID TRAVELER RECURSION
 //
-unsigned int grid_traveler(int m, int n)
+unsigned int grid_traveler_recu(const int &x, const int &y)
 {
-    // O(2 ^ n+m) time
-    // O(n+m) space
-    if (m == 1 && n == 1) return 1;
-    if (m == 0 || n == 0) return 0;
-    return grid_traveler(m - 1, n) + grid_traveler(m, n - 1);
+    // O(2 ^ y+x) time
+    // O(y+x) space
+    if (x == 1 && y == 1) return 1;
+    if (x == 0 || y == 0) return 0;
+    return grid_traveler_recu(x - 1, y) + grid_traveler_recu(x, y - 1);
 }
-
 //
 // GRID TRAVELER MEMOIZATION
 //
-unsigned int grid_traveler_memo(int m, int n, std::map<std::vector<int>, long long int>& memo)
+unsigned int grid_traveler_memo(const int &x, const int &y, std::map<std::vector<int>, long long int>& memo)
 {
-    std::vector<int> key = { m, n };
+    // O(x * y) time
+    // O(y + x) space
+    const std::vector<int> key = { x, y };
     if (memo.count(key)) return memo[key];
-    
-    if (m == 1 && n == 1) return 1;
-    if (m == 0 || n == 0) return 0;
-    
-    memo[key] = grid_traveler_memo(m - 1, n, memo) + grid_traveler_memo(m, n - 1, memo);
+    if (x == 1 && y == 1) return 1;
+    if (x == 0 || y == 0) return 0;
+    memo[key] = grid_traveler_memo(x - 1, y, memo) + grid_traveler_memo(x, y - 1, memo);
     return memo[key];
-    // O(m * n) time
-    // O(n + m) space
 }
 
-// grid_traveler_memo overload
-unsigned int grid_traveler_memo(int m, int n)
+// overload
+unsigned int grid_traveler_memo(const int &x, const int &y)
 {
-    std::map<std::vector<int>, long long int> default_map;
-    return grid_traveler_memo(m, n, default_map);
+    std::map<std::vector<int>, long long int> memo;
+    return grid_traveler_memo(x, y, memo);
 }
 //
 // GRID TRAVELER TABULATION
 //
-unsigned int grid_traveler_tab(int m, int n)
+unsigned int grid_traveler_tab(const int &x, const int &y)
 {
     // O(n*m) time
     // O(n*m) space
-    // TODO bug: out of range crashe
-    std::vector<std::vector<int>> table(n+1, std::vector<int>(n+1));
+    std::vector<std::vector<int>> table(x+1, std::vector<int>(y+1, 0));
     table[1][1] = 1;
-    for(int i = 0; i <= m; ++i){
-        for(int j = 0; j <= n; ++j){
-            int current = table[i][j];
-            if(j+1 <= n) table[i][j + 1] += current;
-            if(i+1 <= m) table[i + 1][j] += current;
+    for(int i = 0; i <= x; ++i){
+        for(int j = 0; j <= y; ++j){
+            const int current = table[i][j];
+            if(j+1 <= y) table[i][j + 1] += current;
+            if(i+1 <= x) table[i + 1][j] += current;
         }
     }
-    // printv(table);
-    return table[m][n];
+    return table[x][y];
+}
+//
+// GRID TRAVELER CALLER
+//
+unsigned int grid_traveler(const int &x, const int &y, unsigned int(*grid_traveler_func)(const int&, const int&) = grid_traveler_tab)
+{
+    if(x < 0 || y < 0) std::clog << "Negative numbers are not alowed." << std::endl;
+    if (x == 1 && y == 1) return 1;
+    if (x == 0 || y == 0) return 0;
+    return grid_traveler_func(x, y);
 }
 
-void run_grid_traveler(unsigned int(*grid_traveler_func)(int, int))
+void test_grid_traveler(unsigned int(*grid_traveler_func)(const int&, const int&))
 {
-    std::cout << grid_traveler_func(1, 1) << '\n';
-    std::cout << grid_traveler_func(2, 3) << '\n';
-    std::cout << grid_traveler_func(3, 2) << '\n';
-    std::cout << grid_traveler_func(3, 3) << '\n';
-    std::cout << grid_traveler_func(18, 18) << '\n';
-    std::cout << "I made it!" << std::endl;
+    std::cout << grid_traveler(1, 1, grid_traveler_func) << '\n';   // 1
+    std::cout << grid_traveler(2, 3, grid_traveler_func) << '\n';   // 3
+    std::cout << grid_traveler(3, 2, grid_traveler_func) << '\n';   // 3
+    std::cout << grid_traveler(3, 3, grid_traveler_func) << '\n';   // 6
+    std::cout << grid_traveler(18, 18, grid_traveler_func) << '\n'; // 2'333'806'220
 }
 //
 // CAN SUM RECURSION
 //
-bool can_sum(int target_sum, std::vector<int> numbers)
+bool can_sum_recu(const int &target, const std::vector<int> &numbers)
 {
     // O(n ^ m) time
     // O(m) space
-    
-    if (target_sum == 0) return true;
-    if (target_sum < 0) return false;
+    if (target == 0) return true;
+    if (target < 0) return false;
     
     for (int number : numbers){
-        const int remainder = target_sum - number;
-        if (can_sum(remainder, numbers))
+        const int remainder = target - number;
+        if (can_sum_recu(remainder, numbers))
             return true;
     }
     return false;
@@ -244,72 +256,84 @@ bool can_sum(int target_sum, std::vector<int> numbers)
 //
 // CAN SUM? MEMOIZATION
 //
-bool can_sum_memo(int target_sum, std::vector<int> numbers, std::map<int, bool>& memo)
+bool can_sum_memo(const int &target, const std::vector<int> &numbers, std::map<int, bool> &memo)
 {
-    if (memo.count(target_sum)) return memo[target_sum];
-    if (target_sum == 0) return true;
-    if (target_sum < 0) return false;
+    if (memo.count(target)) return memo[target];
+    if (target == 0) return true;
+    if (target < 0) return false;
     
     for (int number : numbers){
-        const int remainder = target_sum - number;
+        const int remainder = target - number;
         if (can_sum_memo(remainder, numbers, memo)){
-            memo[target_sum] = true;
+            memo[target] = true;
             return true;
         }
     }
-    memo[target_sum] = false;
+    memo[target] = false;
     return false;
 }
 
 // can_sum_memo overload
-bool can_sum_memo(int target_sum, std::vector<int> numbers)
+bool can_sum_memo(const int &target, const std::vector<int> &numbers)
 {
-    std::map<int, bool> default_map;
-    return can_sum_memo(target_sum, numbers, default_map);
+    std::map<int, bool> memo;
+    return can_sum_memo(target, numbers, memo);
 }
 //
 // CAN SUM TABULATION
 //
-bool can_sum_tab(int target_sum, std::vector<int> numbers)
+bool can_sum_tab(const int &target, const std::vector<int> &numbers)
 {
     // O(m*n) time
     // O(m) space
-    std::vector<bool> table(target_sum+1, false);
+    std::vector<bool> table(target+1, false);
     table[0] = true;
     for(int i = 0; i < table.size(); ++i)
         if(table[i])
             for(int num : numbers)
                 if(i + num <= table.size())table[i + num] = true;
-    return table[target_sum];
+    return table[target];
 }
-
-void run_can_sum(bool(*can_sum_func)(int, std::vector<int>))
+//
+// CAN SUN CALLER
+//
+bool can_sum(const int &target, const std::vector<int> &numbers, bool(*can_sum_func)(const int&, const std::vector<int>&) = can_sum_tab)
 {
+    if(target < 0){
+        std::clog << "Negative number! Invalid." << std::endl;
+        return false;
+    }
+    else if(target == 0) return true;
+    return can_sum_func(target, numbers);
+}
+void test_can_sum(bool(*can_sum_func)(const int&, const std::vector<int>&))
+{
+    std::cout << std::boolalpha;
     std::vector<int> numbers1 = { 2, 3 };
-    std::cout << can_sum_func(7, numbers1) << std::endl;     // true
+    std::cout << can_sum(7, numbers1, can_sum_func) << std::endl;     // true
     std::vector<int> numbers2 = { 5, 3, 4, 7 };
-    std::cout << can_sum_func(7, numbers2) << std::endl;     // true
+    std::cout << can_sum(7, numbers2, can_sum_func) << std::endl;     // true
     std::vector<int> numbers3 = { 2, 4 };
-    std::cout << can_sum_func(7, numbers3) << std::endl;     // false
+    std::cout << can_sum(7, numbers3, can_sum_func) << std::endl;     // false
     std::vector<int> numbers4 = { 2, 3, 5 };
-    std::cout << can_sum_func(8, numbers4) << std::endl;     // true
+    std::cout << can_sum(8, numbers4, can_sum_func) << std::endl;     // true
     std::vector<int> numbers5 = { 7, 14 };
-    std::cout << can_sum_func(300, numbers5) << std::endl;   // false
+    std::cout << can_sum(300, numbers5, can_sum_func) << std::endl;   // false
 }
 //
 // HOW SUM RECURSION
 //
-std::vector<int> how_sum(int target_sum, std::vector<int> numbers)
+std::vector<int> how_sum_recu(const int &target, const std::vector<int> &numbers)
 {
     // O(n ^ m * m) time
     // O(m) space
-    if (target_sum == 0) return {};
+    if (target == 0) return {};
     std::vector<int> null_vector = {0};
-    if (target_sum < 0) return null_vector;
+    if (target < 0) return null_vector;
     
     for (int number : numbers){
-        const int remainder = target_sum - number;
-        std::vector<int> remainder_result = how_sum(remainder, numbers);
+        const int remainder = target - number;
+        std::vector<int> remainder_result = how_sum_recu(remainder, numbers);
         if (remainder_result != null_vector){
             remainder_result.push_back(number);
             return remainder_result;
@@ -320,40 +344,40 @@ std::vector<int> how_sum(int target_sum, std::vector<int> numbers)
 //
 // HOW SUM MEMOIZATION
 //
-std::vector<int> how_sum_memo(int target_sum, std::vector<int> numbers, std::map<int, std::vector<int>>& memo){
-    if (memo.count(target_sum)) return memo[target_sum];
-    if (target_sum == 0) return {};
-    std::vector<int> null_vector = {0};
-    if (target_sum < 0) return null_vector;
+std::vector<int> how_sum_memo(const int &target, const std::vector<int> &numbers, std::map<int, std::vector<int>>& memo){
+    if (memo.count(target)) return memo[target];
+    if (target == 0) return {};
+    const std::vector<int> null_vector = {0};
+    if (target < 0) return null_vector;
     
     for (int number : numbers){
-        const int remainder = target_sum - number;
-        std::vector<int> remainder_result = how_sum(remainder, numbers);
+        const int remainder = target - number;
+        std::vector<int> remainder_result = how_sum_memo(remainder, numbers, memo);
         if (remainder_result != null_vector){
             remainder_result.push_back(number);
-            memo[target_sum] = remainder_result;
-            return memo[target_sum];
+            memo[target] = remainder_result;
+            return memo[target];
         }
     }
-    memo[target_sum] = null_vector;
+    memo[target] = null_vector;
     return null_vector;
 }
 
 // how_sum overload
-std::vector<int> how_sum_memo(int target_sum, std::vector<int> numbers)
+std::vector<int> how_sum_memo(const int &target, const std::vector<int> &numbers)
 {
-    std::map<int, std::vector<int>> default_map;
-    return how_sum_memo(target_sum, numbers, default_map);
+    std::map<int, std::vector<int>> memo;
+    return how_sum_memo(target, numbers, memo);
 }
 //
 // HOW SUM TABULATION
 //
-std::vector<int> how_sum_tab(int target_sum, std::vector<int> numbers)
+std::vector<int> how_sum_tab(const int &target, const std::vector<int> &numbers)
 {
     // O(m^2*n) time
     // O(m^2) space
     std::vector<int> null_vector(1, 0);
-    std::vector<std::vector<int>> table(target_sum+1, null_vector);
+    std::vector<std::vector<int>> table(target+1, null_vector);
     table[0] = {};
     
     for(int i = 0; i < table.size(); ++i){
@@ -368,53 +392,49 @@ std::vector<int> how_sum_tab(int target_sum, std::vector<int> numbers)
             }
         }
     }
-    
-    return table[target_sum];
+    return table[target];
+}
+//
+// HOW SUM CALLER
+//
+std::vector<int> how_sum(const int &target, const std::vector<int> &numbers, std::vector<int>(*how_sum_func)(const int&, const std::vector<int>&))
+{
+    if(target < 0){
+        std::clog << "Negative number! Invalid." << std::endl;
+        return std::vector<int>(0, 0);
+    }
+    return how_sum_func(target, numbers);
 }
 
-void run_how_sum(std::vector<int>(*how_sum_func)(int, std::vector<int>))
+void test_how_sum(std::vector<int>(*how_sum_func)(const int&, const std::vector<int>&))
 {
     std::vector<int> numbers1 = { 2, 3 };
-    for (int number : how_sum_func(7, numbers1)){
-        std::cout << number << " ";     // {3, 2, 2}
-    }
-    std::cout << std::endl;
+    printv(how_sum(7, numbers1, how_sum_func));     // {3, 2, 2}
     std::vector<int> numbers2 = { 5, 3, 4, 7 };
-    for (int number : how_sum_func(7, numbers2)){
-        std::cout << number << " ";     // {4, 3}
-    }
-    std::cout << std::endl;
+    printv(how_sum(7, numbers2, how_sum_func));     // {4, 3}
     std::vector<int> numbers3 = { 2, 4 };
-    for (int number : how_sum_func(7, numbers3)){
-        std::cout << number << " ";     // {}
-    }
-    std::cout << std::endl;
+    printv(how_sum(7, numbers3, how_sum_func));     // {}
     std::vector<int> numbers4 = { 2, 3, 5 };
-    for (int number : how_sum_func(8, numbers4)){
-        std::cout << number << " ";     // {2, 2, 2, 2}
-    }
-    std::cout << std::endl;
+    printv(how_sum(8, numbers4, how_sum_func));     // {2, 2, 2, 2}
     std::vector<int> numbers5 = { 7, 14 };
-    for (int number : how_sum_func(300, numbers5)){
-        std::cout << number << " ";     // {}
-    }
+    printv(how_sum(300, numbers5, how_sum_func));   // {}
 }
 //
 // BEST SUM RECURSION
 //
-std::vector<int> best_sum(int target_sum, std::vector<int> numbers)
+std::vector<int> best_sum_recu(const int &target, const std::vector<int> &numbers)
 {
     // time O(n^m * m)
     // space O(m^2)
-    if(target_sum == 0) return {};
+    if(target == 0) return {};
     std::vector<int> null_vector = { '\0' };
-    if(target_sum < 0) return null_vector;
+    if(target < 0) return null_vector;
     
     std::vector<int> shortest_combination = null_vector;
     
     for(int number : numbers){
-        const int remainder = target_sum - number;
-        std::vector<int> remainder_combination = best_sum(remainder, numbers);
+        const int remainder = target - number;
+        std::vector<int> remainder_combination = best_sum_recu(remainder, numbers);
         if(remainder_combination != null_vector){
             std::vector<int> combination = remainder_combination;
             combination.push_back(number);
@@ -429,19 +449,19 @@ std::vector<int> best_sum(int target_sum, std::vector<int> numbers)
 //
 // BEST SUM MEMOIZATION
 //
-std::vector<int> best_sum_memo(int target_sum, std::vector<int> numbers, std::map<int, std::vector<int>>& memo)
+std::vector<int> best_sum_memo(const int &target, const std::vector<int> &numbers, std::map<int, std::vector<int>>& memo)
 {
     // time O(m^2 * n)
     // space O(m^2)
-    if(memo.count(target_sum)) return memo[target_sum];
-    if(target_sum == 0) return {};
+    if(memo.count(target)) return memo[target];
+    if(target == 0) return {};
     std::vector<int> null_vector = { '\0' };
-    if(target_sum < 0) return null_vector;
+    if(target < 0) return null_vector;
     
     std::vector<int> shortest_combination = null_vector;
     
     for(int number : numbers){
-        const int remainder = target_sum - number;
+        const int remainder = target - number;
         std::vector<int> remainder_combination = best_sum_memo(remainder, numbers, memo);
         if(remainder_combination != null_vector){
             std::vector<int> combination = remainder_combination;
@@ -452,25 +472,24 @@ std::vector<int> best_sum_memo(int target_sum, std::vector<int> numbers, std::ma
             }
         }
     }
-    
-    memo[target_sum] = shortest_combination;
+    memo[target] = shortest_combination;
     return shortest_combination;
 }
 
-std::vector<int> best_sum_memo(int target_sum, std::vector<int> numbers)
+std::vector<int> best_sum_memo(const int &target, const std::vector<int> &numbers)
 {
     std::map<int, std::vector<int>> memo;
-    return best_sum_memo(target_sum, numbers, memo);
+    return best_sum_memo(target, numbers, memo);
 }
 //
 // BEST SUM TABULATION
 //
-std::vector<int> best_sum_tab(int target_sum, std::vector<int> numbers)
+std::vector<int> best_sum_tab(const int &target, const std::vector<int> &numbers)
 {
     // time O(m^2 * n)
     // space O(m^2)
-    std::vector<int> null_vector(1, 0);
-    std::vector<std::vector<int>> table(target_sum + 1, null_vector);
+    const std::vector<int> null_vector(1, 0);
+    std::vector<std::vector<int>> table(target + 1, null_vector);
     table[0] = {};
     
     for(int i = 0; i < table.size(); ++i){
@@ -486,37 +505,35 @@ std::vector<int> best_sum_tab(int target_sum, std::vector<int> numbers)
             }
         }
     }
-    
-    return table[target_sum];
+    return table[target];
+}
+//
+// BEST SUM CALLER
+//
+std::vector<int> best_sum(const int &target, const std::vector<int> &numbers, std::vector<int>(*best_sum_func)(const int&, const std::vector<int>&))
+{
+    if(target < 0){
+        std::clog << "Negative number! Invalid." << std::endl;
+        return std::vector<int>(0, 0);
+    }
+    return best_sum_func(target, numbers);
 }
 
-void run_best_sum(std::vector<int>(*best_sum_func)(int, std::vector<int>))
+void test_best_sum(std::vector<int>(*best_sum_func)(const int&, const std::vector<int>&))
 {
     std::vector<int> numbers1 = { 5, 3, 4, 7 };
-    for (int number : best_sum_func(7, numbers1)){
-        std::cout << number << " ";     // {7}
-    }
-    std::cout << std::endl;
+    printv(best_sum(7, numbers1, best_sum_func));   // {7}
     std::vector<int> numbers2 = { 2, 3, 5 };
-    for (int number : best_sum_func(8, numbers2)){
-        std::cout << number << " ";     // {3, 5}
-    }
-    std::cout << std::endl;
+    printv(best_sum(8, numbers2, best_sum_func));   // {3, 5}
     std::vector<int> numbers3 = { 1, 4, 5 };
-    for (int number : best_sum_func(8, numbers3)){
-        std::cout << number << " ";     // {4, 4}
-    }
-    std::cout << std::endl;
+    printv(best_sum(8, numbers3, best_sum_func));   // {4, 4}
     std::vector<int> numbers4 = { 1, 2, 5, 25 };
-    for (int number : best_sum_func(100, numbers4)){
-        std::cout << number << " ";     // {25, 25, 25, 25}
-    }
-    std::cout << std::endl;
+    printv(best_sum(100, numbers4, best_sum_func)); // {25, 25, 25, 25}
 }
 //
 // CAN CONSTRUCT RECURSION
 //
-bool can_construct(std::string target, std::vector<std::string> word_bank)
+bool can_construct_recu(const std::string &target, const std::vector<std::string> &word_bank)
 {
     // time O(n^m*m)
     // space O(m^2)
@@ -526,7 +543,7 @@ bool can_construct(std::string target, std::vector<std::string> word_bank)
         if(target.find(word) == 0){
             std::string suffix = target;
             suffix.erase(0, word.size());
-            if(can_construct(suffix, word_bank))
+            if(can_construct_recu(suffix, word_bank))
                 return true;
         }
     }
@@ -535,7 +552,7 @@ bool can_construct(std::string target, std::vector<std::string> word_bank)
 //
 // CAN CONSTRUCT MEMOIZATION
 //
-bool can_construct_memo(std::string target, std::vector<std::string> word_bank, std::map<std::string, bool> &memo)
+bool can_construct_memo(const std::string &target, const std::vector<std::string> &word_bank, std::map<std::string, bool> &memo)
 {
     // time O(n*m^2)
     // space O(m^2)
@@ -556,7 +573,7 @@ bool can_construct_memo(std::string target, std::vector<std::string> word_bank, 
     return false;
 }
 
-bool can_construct_memo(std::string target, std::vector<std::string> word_bank)
+bool can_construct_memo(const std::string &target, const std::vector<std::string> &word_bank)
 {
     std::map<std::string, bool> memo;
     return can_construct_memo(target, word_bank, memo);
@@ -564,56 +581,61 @@ bool can_construct_memo(std::string target, std::vector<std::string> word_bank)
 //
 // CAN CONSTRUCT TABULATION
 //
-bool can_construct_tab(std::string target, std::vector<std::string> word_bank)
+bool can_construct_tab(const std::string &target, const std::vector<std::string> &word_bank)
 {
     // time O(m*n*m)
     // space O(m)
     std::vector<bool> table(target.size()+1, false);
     table[0] = true;
-    // std::cout << table.size() << '\n';
     
     for(int i = 0; i < table.size(); ++i){
         if(table[i]){
             for(std::string word : word_bank){
                 if(target.substr(i, word.size()) == word){
-                    // std::cout << target.substr(i, i + word.size()) << " = " << word << '\n';
                     table[i + word.size()] = true;
                 }
             }
         }
     }
-    
     return table[target.size()];
 }
-
-void run_can_construct(bool(*can_construct_func)(std::string, std::vector<std::string>))
+//
+// CAN CONSTRUCT CALLER
+//
+bool can_construct(const std::string &target, const std::vector<std::string> &word_bank, bool(*can_construct_func)(const std::string&, const std::vector<std::string>&))
 {
+    if(!target.size()) return true;
+    return can_construct_func(target, word_bank);
+}
+
+void test_can_construct(bool(*can_construct_func)(const std::string&, const std::vector<std::string>&))
+{
+    std::cout << std::boolalpha;
     std::vector<std::string> strs1 = { "ab", "abc", "cd", "def", "abcd" };
-    std::cout << std::boolalpha << can_construct_func("abcdef", strs1) << '\n';     // true
+    std::cout << can_construct("abcdef", strs1, can_construct_func) << '\n';     // true
     
     std::vector<std::string> strs2 = { "bo", "rd", "ate", "t", "ska", "sk", "boar" }; 
-    std::cout << can_construct_func("skateboard", strs2) << '\n';     // false
+    std::cout << can_construct("skateboard", strs2, can_construct_func) << '\n';     // false
     
     std::vector<std::string> strs3 = { "a", "p", "ent", "enter", "ot", "o", "t" };
-    std::cout << can_construct_func("enterapotentpot", strs3) << '\n';     // true
+    std::cout << can_construct("enterapotentpot", strs3, can_construct_func) << '\n';     // true
     
     std::vector<std::string> strs4 = { "e", "ee", "eee", "eeee", "eeeee", "eeeeee" };
-    std::cout << can_construct_func("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeef", strs4) << '\n';     // false
+    std::cout << can_construct("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeef", strs4, can_construct_func) << '\n';     // false
 }
 //
 // COUNT CONSTRUCT RECURSION
 //
-int count_construct(std::string target, std::vector<std::string> word_bank)
+int count_construct_recu(const std::string &target, const std::vector<std::string> &word_bank)
 {
     if(target == "") return 1;
-    
     int total_count = 0;
     
     for(std::string word : word_bank){
         if(target.find(word) == 0){
             std::string suffix = target;
             suffix.erase(0, word.size());
-            int num_ways_for_rest = count_construct(suffix, word_bank);
+            int num_ways_for_rest = count_construct_recu(suffix, word_bank);
             total_count += num_ways_for_rest;
         }
     }
@@ -622,13 +644,12 @@ int count_construct(std::string target, std::vector<std::string> word_bank)
 //
 // COUNT CONSTRUCT MEMOIZATION
 //
-int count_construct_memo(std::string target, std::vector<std::string> word_bank, std::map<std::string, int> &memo)
+int count_construct_memo(const std::string &target, const std::vector<std::string> &word_bank, std::map<std::string, int> &memo)
 {
     // time(n*m^2)
     // space(m^2)
     if(memo.count(target)) return memo[target];
     if(target == "") return 1;
-    
     int total_count = 0;
     
     for(std::string word : word_bank){
@@ -643,7 +664,7 @@ int count_construct_memo(std::string target, std::vector<std::string> word_bank,
     return total_count;
 }
 
-int count_construct_memo(std::string target, std::vector<std::string> word_bank)
+int count_construct_memo(const std::string &target, const std::vector<std::string> &word_bank)
 {
     std::map<std::string, int> memo;
     return count_construct_memo(target, word_bank, memo);
@@ -651,7 +672,7 @@ int count_construct_memo(std::string target, std::vector<std::string> word_bank)
 //
 // COUNT CONSTRUCT TABULATION
 //
-int count_construct_tab(std::string target, std::vector<std::string> word_bank)
+int count_construct_tab(const std::string &target, const std::vector<std::string> &word_bank)
 {
     // time O(m^2*n)
     // space O(m)
@@ -666,11 +687,18 @@ int count_construct_tab(std::string target, std::vector<std::string> word_bank)
             }
         }
     }
-
     return table[target.size()];
 }
+//
+// COUNT CONSTRUCT CALLER
+//
+int count_construct(const std::string &target, const std::vector<std::string> &word_bank, int(*count_construct_func)(const std::string&, const std::vector<std::string>&))
+{
+    if(!target.size()) return 1;
+    return count_construct_func(target, word_bank);
+}
 
-void run_count_construct(int(*count_construct_func)(std::string, std::vector<std::string>))
+void test_count_construct(int(*count_construct_func)(const std::string&, const std::vector<std::string>&))
 {
     std::vector<std::string> strs1 = { "purp", "p", "ur", "le", "purpl" };
     std::cout << count_construct_func("purple", strs1) << '\n';     // 2
@@ -690,12 +718,11 @@ void run_count_construct(int(*count_construct_func)(std::string, std::vector<std
 //
 // ALL CONSTRUCT RECURSION
 //
-std::vector<std::vector<std::string>> all_construct(std::string target, std::vector<std::string> word_bank)
+std::vector<std::vector<std::string>> all_construct_recu(const std::string &target, const std::vector<std::string> &word_bank)
 {
     // time O(n^m)
     // space O(m)
     if(target == "") return {{}};
-    
     std::vector<std::vector<std::string>> result;
     
     for(std::string word : word_bank){
@@ -703,7 +730,7 @@ std::vector<std::vector<std::string>> all_construct(std::string target, std::vec
             std::string suffix = target;
             suffix.erase(0, word.size());
             // std::cout << suffix << '\n';
-            std::vector<std::vector<std::string>> suffix_ways = all_construct(suffix, word_bank);
+            std::vector<std::vector<std::string>> suffix_ways = all_construct_recu(suffix, word_bank);
             // printv(suffix_ways);
             std::vector<std::vector<std::string>> target_ways = suffix_ways;
             for(int i = 0; i < target_ways.size(); ++i){
@@ -717,7 +744,7 @@ std::vector<std::vector<std::string>> all_construct(std::string target, std::vec
 //
 // ALL CONSTRUCT MEMOIZATION
 //
-std::vector<std::vector<std::string>> all_construct_memo(std::string target, std::vector<std::string> word_bank, std::map<std::string, std::vector<std::vector<std::string>>> &memo)
+std::vector<std::vector<std::string>> all_construct_memo(const std::string &target, const std::vector<std::string> &word_bank, std::map<std::string, std::vector<std::vector<std::string>>> &memo)
 {
     // time O(n^m)
     // space O(m)
@@ -732,9 +759,7 @@ std::vector<std::vector<std::string>> all_construct_memo(std::string target, std
         if(target.find(word) == 0){
             std::string suffix = target;
             suffix.erase(0, word.size());
-            // std::cout << suffix << '\n';
             std::vector<std::vector<std::string>> suffix_ways = all_construct_memo(suffix, word_bank, memo);
-            // printv(suffix_ways);
             std::vector<std::vector<std::string>> target_ways = suffix_ways;
             for(int i = 0; i < target_ways.size(); ++i){
                 target_ways[i].insert(target_ways[i].begin(), word);
@@ -747,7 +772,7 @@ std::vector<std::vector<std::string>> all_construct_memo(std::string target, std
 }
 
 // all construct overload
-std::vector<std::vector<std::string>> all_construct_memo(std::string target, std::vector<std::string> word_bank)
+std::vector<std::vector<std::string>> all_construct_memo(const std::string &target, const std::vector<std::string> &word_bank)
 {
     std::map<std::string, std::vector<std::vector<std::string>>> memo;
     return all_construct_memo(target, word_bank, memo);
@@ -755,7 +780,7 @@ std::vector<std::vector<std::string>> all_construct_memo(std::string target, std
 //
 // ALL CONSTRUCT TABULATION
 //
-std::vector<std::vector<std::string>> all_construct_tab(std::string target, std::vector<std::string> word_bank)
+std::vector<std::vector<std::string>> all_construct_tab(const std::string &target, const std::vector<std::string> &word_bank)
 {
     // time ~O(n^m)
     // space ~O(n^m)
@@ -773,21 +798,31 @@ std::vector<std::vector<std::string>> all_construct_tab(std::string target, std:
             }
         }
     }
-   
     return table[target.size()];
 }
+//
+// ALL CONSTRUCT CALLER
+//
+std::vector<std::vector<std::string>> all_construct(
+    const std::string &target,
+    const std::vector<std::string> &word_bank,
+    std::vector<std::vector<std::string>>(*all_construct_func)(const std::string&, const std::vector<std::string>&))
+{
+    if(!target.size()) return {{}};
+    return all_construct_func(target, word_bank);
+}
 
-void run_all_construct(std::vector<std::vector<std::string>>(*all_construct_func)(std::string, std::vector<std::string>))
+void test_all_construct(std::vector<std::vector<std::string>>(*all_construct_func)(const std::string&, const std::vector<std::string>&))
 {
     std::vector<std::string> strs1 = { "purp", "p", "ur", "le", "purpl" };
-    printv(all_construct("purple", strs1));
+    printv(all_construct("purple", strs1, all_construct_func));
     // {
     //     {"purp", "le"},
     //     {"p", "ur", "p", "le"}
     // }
     
     std::vector<std::string> strs2 = { "ab", "abc", "cd", "def", "abcd" , "ef", "c"};
-    printv(all_construct("abcdef", strs2));
+    printv(all_construct("abcdef", strs2, all_construct_func));
     // {
     //     {"ab", "cd", "ef"},
     //     {"ab", "c", "def"},
@@ -796,11 +831,11 @@ void run_all_construct(std::vector<std::vector<std::string>>(*all_construct_func
     // }
     
     std::vector<std::string> strs3 = { "bo", "rd", "ate", "t", "ska", "sk", "boar" }; 
-    printv(all_construct("skateboard", strs3));
+    printv(all_construct("skateboard", strs3, all_construct_func));
     // { }
     
     std::vector<std::string> strs4 = { "a", "aa", "aaa", "aaaa", "aaaaa" };
-    printv(all_construct("aaaaaaaaaaaaaaaaaaaaaaaaaaaz", strs4));
+    printv(all_construct("aaaaaaaaaaaaaaaaaaaaaaaaaaaz", strs4, all_construct_func));
     // { }
 }
 
@@ -976,10 +1011,5 @@ void printv_test3()
 
 int main()
 {
-    // printv_test1();
-    // printv_test2();
-    printv_test3();
-    std::cout << "    indent\n";
-    std::cout << "        indent";
-    std::cin.ignore();
+    test_all_construct(&all_construct_memo);
 }
