@@ -1,0 +1,15 @@
+.vs/
+notes/
+src/workbench.cpp
+# ignore all .exe files
+*.exe
+
+#ignore all .obj files
+*.obj
+
+# ignore all .bat files
+*.bat
+
+# ignore debug files
+*.pdb
+*.ilk
